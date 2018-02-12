@@ -115,7 +115,7 @@ module Rails5
         if node.hash_type? && !node_source.match(/^\s*\{.*\}$/m)
           node_source = "{ #{node_source} }"
         end
-        @source_rewriter.replace(node_loc, "#{key}: #{node_source}")
+        @source_rewriter.replace(node_loc, ":#{key} => #{node_source}")
       end
 
       def line_indent(node)

@@ -38,7 +38,7 @@ class HashRewriter
         "}",
         [
           wrap_and_indent(
-            "params: {",
+            ":params => {",
             "}#{optional_comma}",
             params_hash,
             @options.indent
@@ -53,10 +53,10 @@ class HashRewriter
         pairs: @pairs_that_belong_in_params
       )
 
-      rewritten_hashes << "params: #{params_hash}"
+      rewritten_hashes << ":params => #{params_hash}"
     else
       curly_sep = determine_curly_sep(hash_node)
-      rewritten_hashes << "params: {#{curly_sep}#{restring_hash(@pairs_that_belong_in_params)}#{curly_sep}}"
+      rewritten_hashes << ":params => {#{curly_sep}#{restring_hash(@pairs_that_belong_in_params)}#{curly_sep}}"
     end
 
     if has_keys_outside_params?

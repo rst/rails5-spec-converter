@@ -57,7 +57,7 @@ describe Rails5::SpecConverter::TextTransformer do
     expect(transform(test_content)).to eq(test_content)
   end
 
-  it 'can add "params: {}" if an empty hash of arguments is present' do
+  it 'can add ":params => {}" if an empty hash of arguments is present' do
     result = transform(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
         get :index, {}
@@ -66,22 +66,22 @@ describe Rails5::SpecConverter::TextTransformer do
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
-        get :index, params: {}
+        get :index, :params => {}
       end
     RUBY
   end
 
-  it 'can add "params: {}" around hashes that contain a double-splat' do
+  it 'can add ":params => {}" around hashes that contain a double-splat' do
     result = transform(<<-RUBY.strip_heredoc)
       get :index, **index_params, order: 'asc', format: :json
     RUBY
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
-      get :index, params: { **index_params, order: 'asc' }, format: :json
+      get :index, :params => { **index_params, order: 'asc' }, format: :json
     RUBY
   end
 
-  it 'can add "params: {}" around multiline hashes that contain a double-splat' do
+  it 'can add ":params => {}" around multiline hashes that contain a double-splat' do
     result = transform(<<-RUBY.strip_heredoc)
       let(:retrieve_index) do
         get :index, order: 'asc',
@@ -92,7 +92,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
       let(:retrieve_index) do
-        get :index, params: {
+        get :index, :params => {
                       order: 'asc',
                       **index_params
                     },
@@ -101,7 +101,7 @@ describe Rails5::SpecConverter::TextTransformer do
     RUBY
   end
 
-  it 'can add "params: {}" when only unpermitted keys are present' do
+  it 'can add ":params => {}" when only unpermitted keys are present' do
     result = transform(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
         get :index, search: 'bayleef'
@@ -110,12 +110,12 @@ describe Rails5::SpecConverter::TextTransformer do
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
-        get :index, params: { search: 'bayleef' }
+        get :index, :params => { search: 'bayleef' }
       end
     RUBY
   end
 
-  it 'can add "params: {}" when both permitted and unpermitted keys are present' do
+  it 'can add ":params => {}" when both permitted and unpermitted keys are present' do
     result = transform(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
         get :index, search: 'bayleef', format: :json
@@ -124,7 +124,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
-        get :index, params: { search: 'bayleef' }, format: :json
+        get :index, :params => { search: 'bayleef' }, format: :json
       end
     RUBY
   end
@@ -143,7 +143,7 @@ describe Rails5::SpecConverter::TextTransformer do
         RUBY
 
         expect(result).to eq(<<-RUBY.strip_heredoc)
-          get :index, params: {search: 'bayleef'}, session: {'session_property' => 'banana'}, flash: {info: 'Great Search!'}
+          get :index, :params => {search: 'bayleef'}, :session => {'session_property' => 'banana'}, :flash => {info: 'Great Search!'}
         RUBY
       end
     end
@@ -163,7 +163,7 @@ describe Rails5::SpecConverter::TextTransformer do
         RUBY
 
         expect(result).to eq(<<-RUBY.strip_heredoc)
-          get :index, params: {search: 'bayleef'}, headers: {'X-PANCAKE' => 'banana'}
+          get :index, :params => {search: 'bayleef'}, :headers => {'X-PANCAKE' => 'banana'}
         RUBY
       end
 
@@ -177,9 +177,9 @@ describe Rails5::SpecConverter::TextTransformer do
         RUBY
 
         expect(result).to eq(<<-RUBY.strip_heredoc)
-          get :index, params: {
+          get :index, :params => {
             search: 'bayleef'
-          }, headers: {
+          }, :headers => {
             'X-PANCAKE' => 'banana'
           }
         RUBY
@@ -191,7 +191,7 @@ describe Rails5::SpecConverter::TextTransformer do
         RUBY
 
         expect(result).to eq(<<-RUBY.strip_heredoc)
-          get :show, headers: { 'X-BANANA' => 'pancake' }
+          get :show, :headers => { 'X-BANANA' => 'pancake' }
         RUBY
       end
     end
@@ -206,7 +206,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
     expect(result).to eq(<<-RUBY.strip_heredoc)
       it 'executes the controller action' do
-        get :index, params: {search: 'bayleef'}, format: :json
+        get :index, :params => {search: 'bayleef'}, format: :json
       end
     RUBY
   end
@@ -224,7 +224,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
         it 'executes the controller action' do
-          post :create, params: {
+          post :create, :params => {
             color: 'blue',
             style: 'striped'
           }
@@ -252,12 +252,12 @@ describe Rails5::SpecConverter::TextTransformer do
         RUBY
 
         expect(result).to eq(<<-RUBY.strip_heredoc)
-          post :create, params: {
+          post :create, :params => {
             color: 'blue',
             size: {
               width: 10
             }
-          }, headers: {
+          }, :headers => {
             'header' => 'value'
           }
         RUBY
@@ -272,7 +272,7 @@ describe Rails5::SpecConverter::TextTransformer do
       RUBY
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
-        post :show, params: {
+        post :show, :params => {
                       branch_name: 'new_design3',
                       ref: 'foo'
                     },
@@ -290,7 +290,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
         post :show,
-             params: {
+             :params => {
                branch_name: 'new_design3',
                ref: 'foo'
              },
@@ -310,7 +310,7 @@ describe Rails5::SpecConverter::TextTransformer do
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
         put :update,
-          params: {
+          :params => {
             id: @rubygem.to_param,
             linkset: {
               code: @url
@@ -334,7 +334,7 @@ describe Rails5::SpecConverter::TextTransformer do
           expect(result).to eq(<<-RUBY.strip_heredoc)
             let(:perform_action) do
               post :search,
-                params: { type: 'fire', limit: 10, order: 'asc' }
+                :params => { type: 'fire', limit: 10, order: 'asc' }
             end
           RUBY
         end
@@ -355,7 +355,7 @@ describe Rails5::SpecConverter::TextTransformer do
       expect(result).to eq(<<-RUBY.strip_heredoc)
         describe 'important stuff' do
           let(:perform_action) do
-            post :mandrill, params: {
+            post :mandrill, :params => {
               mandrill_events: [{
                 "event" => "hard_bounce"
               }]
@@ -381,7 +381,7 @@ describe Rails5::SpecConverter::TextTransformer do
       expect(result).to eq(<<-RUBY.strip_heredoc)
         let(:perform_request) do
           post :show, {
-            params: {
+            :params => {
               branch_name: 'new_design3',
               ref: 'foo',
             },
@@ -411,7 +411,7 @@ describe Rails5::SpecConverter::TextTransformer do
       RUBY
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
-        get 'users', params: { from: yesterday, to: today }
+        get 'users', :params => { from: yesterday, to: today }
       RUBY
     end
   end
@@ -427,7 +427,7 @@ describe Rails5::SpecConverter::TextTransformer do
       RUBY
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
-        post :show, params: {
+        post :show, :params => {
                         branch_name: 'new_design3',
                         ref: 'foo'
                     }
@@ -443,7 +443,7 @@ describe Rails5::SpecConverter::TextTransformer do
       RUBY
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
-        get :index, params: {search: 'bayleef'}, format: :json
+        get :index, :params => {search: 'bayleef'}, format: :json
       RUBY
     end
 
@@ -456,7 +456,7 @@ describe Rails5::SpecConverter::TextTransformer do
       RUBY
 
       expect(result).to eq(<<-RUBY.strip_heredoc)
-        post :users, params: { user: {name: 'bayleef'} }
+        post :users, :params => { user: {name: 'bayleef'} }
       RUBY
     end
 
